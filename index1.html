@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Save The Date – Wedding Landing</title>
+    <meta name="description" content="Wedding landing page: Save the Date, our story, timeline, venue, RSVP, and album." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="#top" class="brand" aria-label="Trang chủ">Save the Date</a>
+            <nav class="nav">
+                <a href="#gallery" class="nav-link">Album</a>
+                <a href="#timeline" class="nav-link">Timeline</a>
+                <a href="#venue" class="nav-link">Địa điểm</a>
+                <a href="#rsvp" class="nav-link">RSVP</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="top">
+        <section class="hero hero-wedding">
+            <div class="container hero-inner">
+                <div class="hero-text">
+                    <p class="eyebrow">Save the Date</p>
+                    <h1 class="headline couple-name"><span>Ngọc</span> & <span>Minh</span></h1>
+                    <p class="subhead">Chúng mình mong được đón bạn trong ngày đặc biệt này.</p>
+                    <div class="cta-row">
+                        <a href="#rsvp" class="btn btn-primary">Xác nhận tham dự</a>
+                        <a href="#venue" class="btn btn-ghost">Xem địa điểm</a>
+                    </div>
+                </div>
+                <div class="hero-media">
+                    <div class="hero-card">
+                        <img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=1200&q=80&auto=format&fit=crop" alt="Nụ cười dịu dàng" />
+                        <span class="heart" aria-hidden="true">❤</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-bg" aria-hidden="true"></div>
+        </section>
+
+        <section class="features features-wedding">
+            <div class="container features-grid">
+                <div class="feature">
+                    <div class="feature-icon">📸</div>
+                    <h3>Our Story</h3>
+                    <p>Câu chuyện gặp gỡ và đồng hành của chúng mình.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">✨</div>
+                    <h3>Dress Code</h3>
+                    <p>Tông màu ấm, phong cách thanh lịch.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💖</div>
+                    <h3>Celebration</h3>
+                    <p>Cùng nâng ly chúc mừng trong không khí ấm áp.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="countdown" class="countdown">
+            <div class="container countdown-inner">
+                <h2>Đếm ngược đến ngày cưới</h2>
+                <div class="countdown-grid" data-date="2025-12-31T11:30:00+07:00">
+                    <div class="cd-item"><span id="cdDays">0</span><label>Ngày</label></div>
+                    <div class="cd-item"><span id="cdHours">0</span><label>Giờ</label></div>
+                    <div class="cd-item"><span id="cdMinutes">0</span><label>Phút</label></div>
+                    <div class="cd-item"><span id="cdSeconds">0</span><label>Giây</label></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline" class="timeline">
+            <div class="container timeline-inner">
+                <h2>Timeline</h2>
+                <ul class="timeline-list">
+                    <li><strong>10:00</strong> | Đón khách</li>
+                    <li><strong>11:30</strong> | Nghi lễ</li>
+                    <li><strong>12:00</strong> | Tiệc cưới</li>
+                    <li><strong>14:00</strong> | Kết thúc</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="venue" class="venue">
+            <div class="container venue-inner">
+                <h2>Địa điểm</h2>
+                <p>Nhà hàng Hoa Hồng, 123 Đường Hạnh Phúc, Quận 1, TP.HCM</p>
+                <div class="map-wrap">
+                    <iframe title="Bản đồ địa điểm" width="100%" height="300" style="border:0; border-radius:12px;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.502540180768!2d106.700000!3d10.772000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f2bd!2sDistrict%201!5e0!3m2!1sen!2svi!4v1680000000000"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="section">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Album</h2>
+                    <p>Chạm vào ảnh để xem lớn.</p>
+                </div>
+                <div class="gallery" id="galleryGrid">
+                    <!-- JS sẽ thêm ảnh ở đây -->
+                </div>
+            </div>
+        </section>
+
+        <section id="rsvp" class="rsvp">
+            <div class="container rsvp-inner">
+                <h2>RSVP</h2>
+                <form id="rsvpForm" class="rsvp-form" novalidate>
+                    <div class="form-row">
+                        <label for="name">Họ và tên</label>
+                        <input id="name" name="name" type="text" placeholder="Nguyễn Văn A" required />
+                    </div>
+                    <div class="form-row">
+                        <label for="phone">Số điện thoại</label>
+                        <input id="phone" name="phone" type="tel" placeholder="09xx xxx xxx" required />
+                    </div>
+                    <div class="form-row">
+                        <label for="guests">Số khách</label>
+                        <input id="guests" name="guests" type="number" min="1" max="10" value="1" required />
+                    </div>
+                    <div class="form-row">
+                        <label for="message">Lời nhắn</label>
+                        <textarea id="message" name="message" rows="3" placeholder="Hẹn gặp trong ngày vui!"></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Gửi xác nhận</button>
+                    <p class="form-note" id="rsvpNote" role="status" aria-live="polite"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact" class="site-footer">
+        <div class="container footer-inner">
+            <p>Made with <span aria-hidden="true">❤</span> for you — <span id="year"></span></p>
+            <div>
+                <a class="footer-link" href="#top">Lên đầu trang</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close" id="closeBtn">&times;</span>
+        <img id="lightboxImage" src="" alt="">
+        <p id="lightboxCaption"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
