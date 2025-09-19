@@ -1,205 +1,224 @@
-// Landing page gallery + lightbox + UX enhancements
-
-const photos = [
-  // { src: "images/em-1.jpg", caption: "Nụ cười của em" },
-  // { src: "images/em-2.jpg", caption: "Chiều tháng sáu" },
-  // { src: "images/em-3.jpg", caption: "Góc phố quen" },
-];
-
-const fallbackPhotos = [
-  { src: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=1200&q=80&auto=format&fit=crop", caption: "Nụ cười dịu dàng" },
-  { src: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=1200&q=80&auto=format&fit=crop", caption: "Ánh nắng trên tóc" },
-  { src: "https://images.unsplash.com/photo-1503342217505-b0a15cf70489?w=1200&q=80&auto=format&fit=crop", caption: "Một chiều gió nhẹ" },
-  { src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=80&auto=format&fit=crop", caption: "Ánh mắt biết nói" },
-  { src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200&q=80&auto=format&fit=crop", caption: "Khoảnh khắc an yên" },
-  { src: "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=1200&q=80&auto=format&fit=crop", caption: "Bước chân dịu êm" }
-];
-
-function selectData() {
-  return Array.isArray(photos) && photos.length > 0 ? photos : fallbackPhotos;
-}
-
-function createCard(item) {
-  const card = document.createElement('button');
-  card.className = 'card';
-  card.type = 'button';
-  card.setAttribute('aria-label', item.caption || 'Xem ảnh');
-
-  const img = document.createElement('img');
-  img.loading = 'lazy';
-  img.src = item.src;
-  img.alt = item.caption || '';
-
-  const caption = document.createElement('div');
-  caption.className = 'caption';
-  caption.textContent = item.caption || '';
-
-  card.appendChild(img);
-  card.appendChild(caption);
-  card.addEventListener('click', () => openLightbox(item));
-  return card;
-}
-
-function renderGallery() {
-  const grid = document.getElementById('galleryGrid');
-  if (!grid) return;
-  const data = selectData();
-  grid.innerHTML = '';
-  data.forEach(item => grid.appendChild(createCard(item)));
-}
-
-function openLightbox(item) {
-  const lb = document.getElementById('lightbox');
-  const img = document.getElementById('lightboxImage');
-  const cap = document.getElementById('lightboxCaption');
-  if (!lb || !img || !cap) return;
-  img.src = item.src;
-  img.alt = item.caption || '';
-  cap.textContent = item.caption || '';
-  lb.classList.add('open');
-}
-
-function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  const img = document.getElementById('lightboxImage');
-  if (!lb || !img) return;
-  lb.classList.remove('open');
-  img.src = '';
-}
-
-function enableLightboxInteractions() {
-  const lb = document.getElementById('lightbox');
-  const closeBtn = document.getElementById('closeBtn');
-  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
-  if (lb) {
-    lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+// Featured Venues Data
+const venues = [
+  {
+    id: 1,
+    name: "Villa Balbianello",
+    location: "Lake Como",
+    image: "images/image1.jpeg",
+    description: "The whole complex consists of two residential buildings, a church, and a portico (known as Loggia Durini) that can host weddings and events in a truly unique setting.\n\nBut the special feature of Villa Balbianello is above all the vast garden that surrounds the dwellings, with magnificent holm oaks pruned into an umbrella shape so as to offer a splendid view of Lake Como from inside the..."
+  },
+  {
+    id: 2,
+    name: "Villa d'Este",
+    location: "Tivoli",
+    image: "images/image1.jpeg",
+    description: "A magnificent Renaissance villa surrounded by one of the most beautiful gardens in Italy. The villa offers stunning views and elegant spaces perfect for intimate wedding ceremonies.\n\nThe gardens feature fountains, terraces, and ancient trees that create a magical atmosphere for your special day."
+  },
+  {
+    id: 3,
+    name: "Castello di Vincigliata",
+    location: "Florence",
+    image: "images/image1.jpeg",
+    description: "A medieval castle transformed into a luxury wedding venue. The castle offers panoramic views of the Tuscan countryside and provides an authentic Italian experience.\n\nWith its ancient stone walls and modern amenities, it's the perfect blend of history and luxury for your wedding celebration."
+  },
+  {
+    id: 4,
+    name: "Villa San Michele",
+    location: "Fiesole",
+    image: "images/image1.jpeg",
+    description: "Perched on a hill overlooking Florence, this villa offers breathtaking views of the city and surrounding countryside. The venue features beautiful gardens and elegant interiors.\n\nThe villa's terraces provide the perfect setting for outdoor ceremonies with panoramic views of the Tuscan landscape."
+  },
+  {
+    id: 5,
+    name: "Palazzo Vecchio",
+    location: "Florence",
+    image: "images/image1.jpeg",
+    description: "A historic palace in the heart of Florence, offering grand halls and courtyards for your wedding celebration. The palace combines Renaissance architecture with modern luxury.\n\nYour guests will be amazed by the frescoed ceilings and marble floors that create an unforgettable backdrop for your special day."
+  },
+  {
+    id: 6,
+    name: "Villa Cimbrone",
+    location: "Ravello",
+    image: "images/image1.jpeg",
+    description: "A stunning villa with panoramic views of the Amalfi Coast. The venue features beautiful gardens, terraces, and elegant reception rooms.\n\nThe infinity terrace offers breathtaking views of the Mediterranean Sea, creating a romantic setting for your wedding ceremony."
+  },
+  {
+    id: 7,
+    name: "Castello di Brolio",
+    location: "Chianti",
+    image: "images/image1.jpeg",
+    description: "A historic castle in the heart of Chianti wine region. The castle offers wine cellars, gardens, and elegant halls for your wedding celebration.\n\nSurrounded by vineyards and olive groves, this venue provides an authentic Tuscan experience with world-class wines."
+  },
+  {
+    id: 8,
+    name: "Villa La Foce",
+    location: "Val d'Orcia",
+    image: "images/image1.jpeg",
+    description: "A beautiful villa set in the rolling hills of Val d'Orcia. The venue features formal gardens, terraces, and elegant interiors perfect for intimate celebrations.\n\nThe villa's location offers stunning views of the UNESCO World Heritage landscape of Val d'Orcia."
+  },
+  {
+    id: 9,
+    name: "Palazzo Pitti",
+    location: "Florence",
+    image: "images/image1.jpeg",
+    description: "A grand Renaissance palace with magnificent gardens and elegant halls. The palace offers a royal setting for your wedding celebration.\n\nThe Boboli Gardens provide a beautiful backdrop for outdoor ceremonies, while the palace halls offer grand spaces for receptions."
+  },
+  {
+    id: 10,
+    name: "Villa Gamberaia",
+    location: "Settignano",
+    image: "images/image1.jpeg",
+    description: "A historic villa with formal Italian gardens overlooking Florence. The venue offers intimate spaces and beautiful terraces for your wedding celebration.\n\nThe villa's gardens feature fountains, statues, and manicured hedges that create a romantic and elegant atmosphere."
   }
-}
+];
 
-function enableSmoothScroll() {
-  const header = document.querySelector('.site-header');
-  const headerH = header ? header.offsetHeight : 0;
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const hash = link.getAttribute('href');
-      if (!hash || hash.length < 2) return;
-      const target = document.querySelector(hash);
-      if (!target) return;
-      e.preventDefault();
-      const y = target.getBoundingClientRect().top + window.scrollY - headerH - 8;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    });
+let currentVenueIndex = 0;
+
+// Function to update venue display
+function updateVenueDisplay() {
+  const venue = venues[currentVenueIndex];
+  const currentPageElement = document.getElementById('currentPage');
+  const featuredImage = document.querySelector('.featured-image');
+  const venueName = document.querySelector('.venue-name');
+  const venueLocation = document.querySelector('.venue-location');
+  const venueDescription = document.querySelector('.venue-description');
+  
+  // Update counter
+  currentPageElement.textContent = venue.id;
+  
+  // Update image
+  featuredImage.src = venue.image;
+  featuredImage.alt = venue.name;
+  
+  // Update venue info
+  venueName.textContent = venue.name;
+  venueLocation.textContent = venue.location;
+  
+  // Update description
+  const descriptionParagraphs = venue.description.split('\n\n');
+  venueDescription.innerHTML = '';
+  
+  descriptionParagraphs.forEach((paragraph, index) => {
+    const p = document.createElement('p');
+    p.textContent = paragraph;
+    venueDescription.appendChild(p);
   });
+  
+  // Add "View more" link
+  const viewMore = document.createElement('span');
+  viewMore.textContent = 'View more';
+  viewMore.className = 'view-more';
+  viewMore.style.cursor = 'pointer';
+  venueDescription.appendChild(viewMore);
+  
+  // Update navigation buttons (no disabled state since we have loop)
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  // Remove disabled state for continuous navigation
+  prevBtn.disabled = false;
+  nextBtn.disabled = false;
 }
 
-function setFooterYear() {
-  const el = document.getElementById('year');
-  if (el) el.textContent = new Date().getFullYear();
+// Function to change venue
+function changeVenue(direction) {
+  const newIndex = currentVenueIndex + direction;
+  
+  if (direction === 1) {
+    // Moving forward - if at last venue, go to first
+    currentVenueIndex = newIndex >= venues.length ? 0 : newIndex;
+  } else {
+    // Moving backward - if at first venue, go to last
+    currentVenueIndex = newIndex < 0 ? venues.length - 1 : newIndex;
+  }
+  
+  updateVenueDisplay();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderGallery();
-  enableLightboxInteractions();
-  enableSmoothScroll();
-  setFooterYear();
-  startSinceCounter();
-  initCountdown();
-  initRSVP();
-  initRevealOnScroll();
+// Initialize the display when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  updateVenueDisplay();
 });
 
-// Realtime counter since 16/06/2023
-function startSinceCounter() {
-  const start = new Date(2023, 5, 16, 0, 0, 0); // month is 0-indexed (5 = June)
-  const elDays = document.getElementById('sinceDays');
-  const elHours = document.getElementById('sinceHours');
-  const elMinutes = document.getElementById('sinceMinutes');
-  const elSeconds = document.getElementById('sinceSeconds');
-  if (!elDays || !elHours || !elMinutes || !elSeconds) return;
+// Add keyboard navigation
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'ArrowLeft') {
+    changeVenue(-1);
+  } else if (event.key === 'ArrowRight') {
+    changeVenue(1);
+  }
+});
 
-  const update = () => {
-    const now = new Date();
-    let diff = Math.max(0, Math.floor((now - start) / 1000)); // in seconds
-    const days = Math.floor(diff / (24 * 60 * 60)); diff -= days * 24 * 60 * 60;
-    const hours = Math.floor(diff / (60 * 60)); diff -= hours * 60 * 60;
-    const minutes = Math.floor(diff / 60); diff -= minutes * 60;
-    const seconds = diff;
-    elDays.textContent = String(days);
-    elHours.textContent = String(hours).padStart(2, '0');
-    elMinutes.textContent = String(minutes).padStart(2, '0');
-    elSeconds.textContent = String(seconds).padStart(2, '0');
-  };
+// Testimonials Data
+const testimonials = [
+  {
+    id: 1,
+    quote: "Lorem ipsum sit ac suspendisse adipiscing eget aliquam fermentum rutrum tempus aenean. Suspendisse nascetur vulputate viverra varius eu ullamcorper. Cursus pellentesque erat eget eget ullamcorper id in. Nullam scelerisque varius viverra augue quis. Laoreet eget curabitur vitae sed at facilisis purus convallis imperdiet.\n\nPenatibus auctor diam vivamus amet a vehicula ultrices. Volutpat arcu in amet praesent nisl mattis etiam cras orci. Ut urna elementum sapien orci lacus!",
+    author: "Joy & Jordan",
+    avatar: "images/image1.jpeg"
+  },
+  {
+    id: 2,
+    quote: "Our wedding at Villa Balbianello was absolutely magical. The venue exceeded all our expectations and the team made our special day unforgettable. The gardens were breathtaking and the service was impeccable.\n\nWe couldn't have asked for a more perfect setting for our wedding. Every detail was handled with care and attention, making our celebration truly special.",
+    author: "Dianne & Michael",
+    avatar: "images/image1.jpeg"
+  },
+  {
+    id: 3,
+    quote: "The experience was beyond our wildest dreams. From the moment we arrived at the venue, we knew we had made the right choice. The staff was professional, the setting was romantic, and our guests were amazed.\n\nThank you for making our wedding day so perfect. We will cherish these memories forever and highly recommend this venue to any couple looking for something extraordinary.",
+    author: "Gabrielle & Simon",
+    avatar: "images/image1.jpeg"
+  },
+  {
+    id: 4,
+    quote: "What an incredible experience! The venue provided the perfect backdrop for our wedding celebration. The attention to detail and the beautiful surroundings made our day truly special.\n\nOur guests are still talking about how amazing everything was. We are so grateful for the wonderful memories and the perfect wedding day you helped us create.",
+    author: "Zee & Adrian",
+    avatar: "images/image1.jpeg"
+  }
+];
 
-  update();
-  setInterval(update, 1000);
-}
+let currentTestimonialIndex = 0;
 
-// Countdown to wedding date (from data attribute on .countdown-grid)
-function initCountdown() {
-  const grid = document.querySelector('.countdown-grid');
-  if (!grid) return;
-  const dateStr = grid.getAttribute('data-date');
-  if (!dateStr) return;
-  const target = new Date(dateStr);
-  const d = document.getElementById('cdDays');
-  const h = document.getElementById('cdHours');
-  const m = document.getElementById('cdMinutes');
-  const s = document.getElementById('cdSeconds');
-  if (!d || !h || !m || !s) return;
-
-  const update = () => {
-    const now = new Date();
-    let diff = Math.max(0, Math.floor((target - now) / 1000));
-    const days = Math.floor(diff / 86400); diff -= days * 86400;
-    const hours = Math.floor(diff / 3600); diff -= hours * 3600;
-    const minutes = Math.floor(diff / 60); diff -= minutes * 60;
-    const seconds = diff;
-    d.textContent = String(days);
-    h.textContent = String(hours).padStart(2, '0');
-    m.textContent = String(minutes).padStart(2, '0');
-    s.textContent = String(seconds).padStart(2, '0');
-  };
-  update();
-  setInterval(update, 1000);
-}
-
-// Simple RSVP handler (no backend): validate and show a friendly note
-function initRSVP() {
-  const form = document.getElementById('rsvpForm');
-  const note = document.getElementById('rsvpNote');
-  if (!form || !note) return;
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const data = new FormData(form);
-    const name = (data.get('name') || '').toString().trim();
-    const phone = (data.get('phone') || '').toString().trim();
-    const guests = Number(data.get('guests')) || 1;
-    if (!name || !phone) {
-      note.textContent = 'Vui lòng nhập đầy đủ họ tên và số điện thoại.';
-      return;
-    }
-    note.textContent = `Cảm ơn ${name}! Đã ghi nhận RSVP cho ${guests} khách. Hẹn gặp bạn!`;
-    form.reset();
+// Function to update testimonial display
+function updateTestimonialDisplay() {
+  const testimonial = testimonials[currentTestimonialIndex];
+  const quoteText = document.querySelector('.quote-text');
+  const authorName = document.querySelector('.author-name');
+  const authorAvatar = document.querySelector('.author-avatar');
+  
+  // Update quote text
+  const quoteParagraphs = testimonial.quote.split('\n\n');
+  quoteText.innerHTML = '';
+  
+  quoteParagraphs.forEach((paragraph) => {
+    const p = document.createElement('p');
+    p.textContent = paragraph;
+    quoteText.appendChild(p);
   });
+  
+  // Update author info
+  authorName.textContent = testimonial.author;
+  authorAvatar.src = testimonial.avatar;
+  authorAvatar.alt = testimonial.author;
 }
 
-// Reveal-on-scroll using IntersectionObserver
-function initRevealOnScroll() {
-  const elements = document.querySelectorAll('.reveal');
-  if (!elements.length) return;
-  const onIntersect = (entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  };
-  const observer = new IntersectionObserver(onIntersect, {
-    root: null,
-    rootMargin: '0px 0px -10% 0px',
-    threshold: 0.15
-  });
-  elements.forEach(el => observer.observe(el));
+// Function to change testimonial
+function changeTestimonial(direction) {
+  const newIndex = currentTestimonialIndex + direction;
+  
+  if (direction === 1) {
+    // Moving forward - if at last testimonial, go to first
+    currentTestimonialIndex = newIndex >= testimonials.length ? 0 : newIndex;
+  } else {
+    // Moving backward - if at first testimonial, go to last
+    currentTestimonialIndex = newIndex < 0 ? testimonials.length - 1 : newIndex;
+  }
+  
+  updateTestimonialDisplay();
 }
+
+// Initialize testimonials when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  updateVenueDisplay();
+  updateTestimonialDisplay();
+});
