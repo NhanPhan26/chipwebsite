@@ -2,13 +2,225 @@
 <html lang="vi">
 
 <head>
-    <title>Hi Chip</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Save The Date – Wedding Landing</title>
+  <meta name="description"
+    content="Wedding landing page: Save the Date, our story, timeline, venue, RSVP, and album." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="card">
-        <h1>Nguyễn Thị Tâm Anh</h1>
+  <div class="container">
+    <div class="hero-section">
+      <div class="hero-background"></div>
+      <img class="hero-image" src="images/image1.jpeg" alt="Italian wedding venue" />
+      <div class="hero-curve"></div>
+      <div class="hero-content">
+        <div class="content-wrapper">
+          <h1 class="hero-title">Discover your perfect Italian wedding venue</h1>
+          <p class="hero-description">
+            Sagittis adipiscing posuere id adipiscing aliquam posuere. Aliquet faucibus duis accumsan aliquet tempor
+            diam dignissim suscipit. Nibh urna ut diam fames.
+          </p>
+        </div>
+        <div class="scroll-indicator">
+          <span class="scroll-text">Scroll</span>
+          <div class="scroll-arrow">
+            <div class="arrow-icon"></div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+  <section class="locations-section">
+    <div class="locations-container">
+      <div class="locations-header">
+        <h2 class="locations-title">Locations</h2>
+        <p class="locations-subtitle">that you will remember forever</p>
+      </div>
+      <div class="locations-grid">
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Florence" class="location-image" />
+          <div class="location-name">Florence</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="San Gamignano" class="location-image" />
+          <div class="location-name">San Gamignano</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Volterra" class="location-image" />
+          <div class="location-name">Volterra</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Chianti" class="location-image" />
+          <div class="location-name">Chianti</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Val d'Orcia" class="location-image" />
+          <div class="location-name">Val d'Orcia</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Siena" class="location-image" />
+          <div class="location-name">Siena</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Lucca" class="location-image" />
+          <div class="location-name">Lucca</div>
+        </div>
+        <div class="location-card">
+          <img src="images/image1.jpeg" alt="Lucca" class="location-image" />
+          <div class="location-name">Lucca</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="featured-section">
+    <div class="featured-container">
+      <div class="featured-header">
+        <h2 class="featured-title">Featured venues</h2>
+      </div>
+
+      <div class="featured-card" id="featuredCard">
+        <img src="images/image1.jpeg" alt="Villa Balbianello" class="featured-image" />
+        <div class="featured-content">
+          <div class="featured-info">
+            <div class="featured-counter">
+              <span class="current-page" id="currentPage">1</span>
+              <span class="total-pages">/10</span>
+            </div>
+            <div class="featured-details">
+              <div class="venue-info">
+                <h3 class="venue-name">Villa Balbianello</h3>
+                <p class="venue-location">Lake Como</p>
+              </div>
+              <div class="venue-description">
+                <p>The whole complex consists of two residential buildings, a church, and a portico (known as Loggia
+                  Durini) that can host weddings and events in a truly unique setting.</p>
+                <p>But the special feature of Villa Balbianello is above all the vast garden that surrounds the
+                  dwellings, with magnificent holm oaks pruned into an umbrella shape so as to offer a splendid view of
+                  Lake Como from inside the...</p>
+                <span class="view-more">View more</span>
+              </div>
+            </div>
+          </div>
+          <div class="featured-navigation">
+            <button class="nav-btn prev-btn" id="prevBtn" onclick="changeVenue(-1)">
+              <div class="nav-arrow left-arrow"></div>
+            </button>
+            <button class="nav-btn next-btn" id="nextBtn" onclick="changeVenue(1)">
+              <div class="nav-arrow right-arrow"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="portfolios-section">
+    <div class="portfolios-container">
+      <div class="portfolios-header">
+        <h2 class="portfolios-title">Our portfolios</h2>
+      </div>
+      <div class="portfolios-grid">
+        <div class="portfolio-card">
+          <img src="images/image1.jpeg" alt="Joy & Jordan Wedding" class="portfolio-image" />
+          <div class="portfolio-overlay">
+            <div class="portfolio-subtitle">THE WEDDING OF</div>
+            <div class="portfolio-couple">Joy & Jordan</div>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <img src="images/image1.jpeg" alt="Dianne & Michael Wedding" class="portfolio-image" />
+          <div class="portfolio-overlay">
+            <div class="portfolio-subtitle">THE WEDDING OF</div>
+            <div class="portfolio-couple">Dianne & Michael</div>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <img src="images/image1.jpeg" alt="Gabrielle & Simon Wedding" class="portfolio-image" />
+          <div class="portfolio-overlay">
+            <div class="portfolio-subtitle">THE WEDDING OF</div>
+            <div class="portfolio-couple">Gabrielle & Simon</div>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <img src="images/image1.jpeg" alt="Zee & Adrian Wedding" class="portfolio-image" />
+          <div class="portfolio-overlay">
+            <div class="portfolio-subtitle">THE WEDDING OF</div>
+            <div class="portfolio-couple">Zee & Adrian</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="testimonials-section">
+    <div class="testimonials-container">
+      <button class="testimonial-nav prev-testimonial" onclick="changeTestimonial(-1)">
+        <div class="testimonial-arrow left-arrow"></div>
+      </button>
+
+      <div class="testimonial-content">
+        <div class="testimonial-header">
+          <h2 class="testimonial-title">Testimonials</h2>
+          <p class="testimonial-subtitle">from happy, delighted couples</p>
+        </div>
+
+        <div class="testimonial-quote">
+          <div class="quote-mark left-quote">"</div>
+          <div class="quote-text">
+            <p>Lorem ipsum sit ac suspendisse adipiscing eget aliquam fermentum rutrum tempus aenean. Suspendisse
+              nascetur vulputate viverra varius eu ullamcorper. Cursus pellentesque erat eget eget ullamcorper id in.
+              Nullam scelerisque varius viverra augue quis. Laoreet eget curabitur vitae sed at facilisis purus
+              convallis imperdiet.</p>
+            <p>Penatibus auctor diam vivamus amet a vehicula ultrices. Volutpat arcu in amet praesent nisl mattis etiam
+              cras orci. Ut urna elementum sapien orci lacus!</p>
+          </div>
+          <div class="quote-mark right-quote">"</div>
+        </div>
+
+        <div class="testimonial-author">
+          <img src="images/image1.jpeg" alt="Joy & Jordan" class="author-avatar" />
+          <div class="author-name">Joy & Jordan</div>
+        </div>
+      </div>
+
+      <button class="testimonial-nav next-testimonial" onclick="changeTestimonial(1)">
+        <div class="testimonial-arrow right-arrow"></div>
+      </button>
+    </div>
+  </section>
+  <footer class="footer-section">
+    <div class="footer-container">
+      <div class="footer-logo">
+        <div class="logo-placeholder"></div>
+      </div>
+      
+      <div class="footer-links">
+        <a href="#" class="footer-link">About us</a>
+        <a href="#" class="footer-link">Terms of Service</a>
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">FAQ</a>
+      </div>
+      
+      <div class="footer-social">
+        <a href="#" class="social-icon facebook">
+          <div class="social-icon-bg"></div>
+        </a>
+        <a href="#" class="social-icon twitter">
+          <div class="social-icon-bg"></div>
+        </a>
+        <a href="#" class="social-icon instagram">
+          <div class="social-icon-bg"></div>
+        </a>
+      </div>
+    </div>
+  </footer>
+  <script src="script.js"></script>
 </body>
 
 </html>
