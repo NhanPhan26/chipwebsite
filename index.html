@@ -1,226 +1,234 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Save The Date – Wedding Landing</title>
-  <meta name="description"
-    content="Wedding landing page: Save the Date, our story, timeline, venue, RSVP, and album." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;600&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <title>MQTT Toggle — Simple</title>
+  <style>
+    :root{
+      --bg:#071025; --card:#071827; --muted:#9aa4b2; --on:#10b981; --off:#cbd5e1;
+      --glass: rgba(255,255,255,0.02);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%}
+    body{
+      margin:0; background:linear-gradient(180deg,#041021,#071025); color:#e6eef6;
+      display:flex; align-items:center; justify-content:center; padding:20px;
+    }
+    .card{
+      width:360px; max-width:95vw; border-radius:12px; padding:18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);
+      text-align:center;
+    }
+    h1{margin:0;font-size:18px}
+    p.lead{margin:8px 0 18px;color:var(--muted);font-size:13px}
+    /* Toggle */
+    .switch {
+      --w:96px; --h:48px;
+      width:var(--w); height:var(--h); border-radius:28px; position:relative;
+      background:rgba(255,255,255,0.04); padding:6px; box-sizing:border-box;
+      display:inline-block; transition:background .16s ease, opacity .16s;
+      cursor:pointer;
+    }
+    .switch[aria-disabled="true"]{ opacity:0.45; cursor:not-allowed; }
+    .switch[data-on="true"]{ background: linear-gradient(90deg, rgba(16,185,129,0.18), rgba(6,182,212,0.08)); }
+    .knob { width:36px;height:36px;border-radius:50%;background:white;transform:translateX(0); transition: transform .16s cubic-bezier(.2,.9,.3,1) }
+    .switch[data-on="true"] .knob { transform: translateX(48px); }
+    .label { margin-top:12px; font-weight:700; font-size:16px; }
+    .status { margin-top:8px; font-size:13px; color:var(--muted); }
+    .small { font-size:12px; color:var(--muted) }
+  </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="hero-section">
-      <div class="hero-background"></div>
-      <img class="hero-image" src="images/image1.jpeg" alt="Italian wedding venue" />
-      <div class="hero-curve"></div>
-      <div class="hero-content">
-        <div class="content-wrapper">
-          <h1 class="hero-title">Discover your perfect Italian wedding venue</h1>
-          <p class="hero-description">
-            Sagittis adipiscing posuere id adipiscing aliquam posuere. Aliquet faucibus duis accumsan aliquet tempor
-            diam dignissim suscipit. Nibh urna ut diam fames.
-          </p>
-        </div>
-        <div class="scroll-indicator">
-          <span class="scroll-text">Scroll</span>
-          <div class="scroll-arrow">
-            <div class="arrow-icon"></div>
-          </div>
-        </div>
-      </div>
+  <div class="card">
+    <h1>Điều khiển đèn (MQTT)</h1>
+    <p class="lead">Chỉ 1 công tắc — tự kết nối tới HiveMQ Cloud</p>
+
+    <!-- Toggle -->
+    <div id="toggle" class="switch" role="button" tabindex="0"
+         data-on="false" aria-pressed="false" aria-disabled="true">
+      <div class="knob"></div>
     </div>
+
+    <div id="label" class="label">Đèn: <span id="lightState">Unknown</span></div>
+    <div id="status" class="status">Trạng thái kết nối: <strong>Chưa kết nối</strong></div>
+
+    <!-- Hidden config (for reference) -->
+    <!--
+      Broker: wss://5ddabd57e04648cf9b89ed05225e9ddc.s1.eu.hivemq.cloud:8884/mqtt
+      Username: phannhan2612oz
+      Password: Thanhnhan003
+      Topic: turn_light
+    -->
   </div>
-  <section class="locations-section">
-    <div class="locations-container">
-      <div class="locations-header">
-        <h2 class="locations-title">Locations</h2>
-        <p class="locations-subtitle">that you will remember forever</p>
-      </div>
-      <div class="locations-grid">
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Florence" class="location-image" />
-          <div class="location-name">Florence</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="San Gamignano" class="location-image" />
-          <div class="location-name">San Gamignano</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Volterra" class="location-image" />
-          <div class="location-name">Volterra</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Chianti" class="location-image" />
-          <div class="location-name">Chianti</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Val d'Orcia" class="location-image" />
-          <div class="location-name">Val d'Orcia</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Siena" class="location-image" />
-          <div class="location-name">Siena</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Lucca" class="location-image" />
-          <div class="location-name">Lucca</div>
-        </div>
-        <div class="location-card">
-          <img src="images/image1.jpeg" alt="Lucca" class="location-image" />
-          <div class="location-name">Lucca</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="featured-section">
-    <div class="featured-container">
-      <div class="featured-header">
-        <h2 class="featured-title">Featured venues</h2>
-      </div>
 
-      <div class="featured-card" id="featuredCard">
-        <img src="images/image1.jpeg" alt="Villa Balbianello" class="featured-image" />
-        <div class="featured-content">
-          <div class="featured-info">
-            <div class="featured-counter">
-              <span class="current-page" id="currentPage">1</span>
-              <span class="total-pages">/10</span>
-            </div>
-            <div class="featured-details">
-              <div class="venue-info">
-                <h3 class="venue-name">Villa Balbianello</h3>
-                <p class="venue-location">Lake Como</p>
-              </div>
-              <div class="venue-description">
-                <p>The whole complex consists of two residential buildings, a church, and a portico (known as Loggia
-                  Durini) that can host weddings and events in a truly unique setting.</p>
-                <p>But the special feature of Villa Balbianello is above all the vast garden that surrounds the
-                  dwellings, with magnificent holm oaks pruned into an umbrella shape so as to offer a splendid view of
-                  Lake Como from inside the...</p>
-                <span class="view-more">View more</span>
-              </div>
-            </div>
-          </div>
-          <div class="featured-navigation">
-            <button class="nav-btn prev-btn" id="prevBtn" onclick="changeVenue(-1)">
-              <div class="nav-arrow left-arrow"></div>
-            </button>
-            <button class="nav-btn next-btn" id="nextBtn" onclick="changeVenue(1)">
-              <div class="nav-arrow right-arrow"></div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="portfolios-section">
-    <div class="portfolios-container">
-      <div class="portfolios-header">
-        <h2 class="portfolios-title">Our portfolios</h2>
-      </div>
-      <div class="portfolios-grid">
-        <div class="portfolio-card">
-          <img src="images/image1.jpeg" alt="Joy & Jordan Wedding" class="portfolio-image" />
-          <div class="portfolio-overlay">
-            <div class="portfolio-subtitle">THE WEDDING OF</div>
-            <div class="portfolio-couple">Joy & Jordan</div>
-          </div>
-        </div>
-        <div class="portfolio-card">
-          <img src="images/image1.jpeg" alt="Dianne & Michael Wedding" class="portfolio-image" />
-          <div class="portfolio-overlay">
-            <div class="portfolio-subtitle">THE WEDDING OF</div>
-            <div class="portfolio-couple">Dianne & Michael</div>
-          </div>
-        </div>
-        <div class="portfolio-card">
-          <img src="images/image1.jpeg" alt="Gabrielle & Simon Wedding" class="portfolio-image" />
-          <div class="portfolio-overlay">
-            <div class="portfolio-subtitle">THE WEDDING OF</div>
-            <div class="portfolio-couple">Gabrielle & Simon</div>
-          </div>
-        </div>
-        <div class="portfolio-card">
-          <img src="images/image1.jpeg" alt="Zee & Adrian Wedding" class="portfolio-image" />
-          <div class="portfolio-overlay">
-            <div class="portfolio-subtitle">THE WEDDING OF</div>
-            <div class="portfolio-couple">Zee & Adrian</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="testimonials-section">
-    <div class="testimonials-container">
-      <button class="testimonial-nav prev-testimonial" onclick="changeTestimonial(-1)">
-        <div class="testimonial-arrow left-arrow"></div>
-      </button>
+  <!-- mqtt.js -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script>
+    // ---------- CONFIG (pre-filled) ----------
+    const BROKER_URL = 'wss://5ddabd57e04648cf9b89ed05225e9ddc.s1.eu.hivemq.cloud:8884/mqtt';
+    const USERNAME = 'phannhan2612oz';
+    const PASSWORD = 'Thanhnhan003';
+    const TOPIC = 'turn_light';
+    const QOS = 0; // 0 is fine for simple toggle
 
-      <div class="testimonial-content">
-        <div class="testimonial-header">
-          <h2 class="testimonial-title">Testimonials</h2>
-          <p class="testimonial-subtitle">from happy, delighted couples</p>
-        </div>
+    // ---------- UI refs ----------
+    const toggle = document.getElementById('toggle');
+    const lightStateEl = document.getElementById('lightState');
+    const statusEl = document.getElementById('status');
+    const labelEl = document.getElementById('label');
 
-        <div class="testimonial-quote">
-          <div class="quote-mark left-quote">"</div>
-          <div class="quote-text">
-            <p>Lorem ipsum sit ac suspendisse adipiscing eget aliquam fermentum rutrum tempus aenean. Suspendisse
-              nascetur vulputate viverra varius eu ullamcorper. Cursus pellentesque erat eget eget ullamcorper id in.
-              Nullam scelerisque varius viverra augue quis. Laoreet eget curabitur vitae sed at facilisis purus
-              convallis imperdiet.</p>
-            <p>Penatibus auctor diam vivamus amet a vehicula ultrices. Volutpat arcu in amet praesent nisl mattis etiam
-              cras orci. Ut urna elementum sapien orci lacus!</p>
-          </div>
-          <div class="quote-mark right-quote">"</div>
-        </div>
+    // ---------- State ----------
+    let client = null;
+    let connected = false;
+    let deviceState = null; // 'ON' or 'OFF' or null
 
-        <div class="testimonial-author">
-          <img src="images/image1.jpeg" alt="Joy & Jordan" class="author-avatar" />
-          <div class="author-name">Joy & Jordan</div>
-        </div>
-      </div>
+    function setToggleEnabled(enabled) {
+      toggle.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+      // pointer events controlled by CSS via opacity, no further changes needed
+    }
 
-      <button class="testimonial-nav next-testimonial" onclick="changeTestimonial(1)">
-        <div class="testimonial-arrow right-arrow"></div>
-      </button>
-    </div>
-  </section>
-  <footer class="footer-section">
-    <div class="footer-container">
-      <div class="footer-logo">
-        <div class="logo-placeholder"></div>
-      </div>
-      
-      <div class="footer-links">
-        <a href="#" class="footer-link">About us</a>
-        <a href="#" class="footer-link">Terms of Service</a>
-        <a href="#" class="footer-link">Privacy Policy</a>
-        <a href="#" class="footer-link">FAQ</a>
-      </div>
-      
-      <div class="footer-social">
-        <a href="#" class="social-icon facebook">
-          <div class="social-icon-bg"></div>
-        </a>
-        <a href="#" class="social-icon twitter">
-          <div class="social-icon-bg"></div>
-        </a>
-        <a href="#" class="social-icon instagram">
-          <div class="social-icon-bg"></div>
-        </a>
-      </div>
-    </div>
-  </footer>
-  <script src="script.js"></script>
+    function setConnectionStatus(text, ok) {
+      statusEl.innerHTML = 'Trạng thái kết nối: <strong>' + text + '</strong>';
+      setToggleEnabled(Boolean(ok));
+    }
+
+    function setDeviceState(state, info) {
+      deviceState = state;
+      if (state === 'ON') {
+        toggle.setAttribute('data-on', 'true');
+        toggle.setAttribute('aria-pressed', 'true');
+        lightStateEl.innerText = 'BẬT';
+        lightStateEl.style.color = '#9be6c7';
+      } else if (state === 'OFF') {
+        toggle.setAttribute('data-on', 'false');
+        toggle.setAttribute('aria-pressed', 'false');
+        lightStateEl.innerText = 'TẮT';
+        lightStateEl.style.color = '#cbd5e1';
+      } else {
+        toggle.setAttribute('data-on', 'false');
+        toggle.setAttribute('aria-pressed', 'false');
+        lightStateEl.innerText = 'Unknown';
+        lightStateEl.style.color = '#cbd5e1';
+      }
+      if (info) {
+        labelEl.title = info;
+      }
+    }
+
+    // ---------- MQTT ----------
+    function createClientAndConnect() {
+      addSmallConsole('Tạo client, kết nối tới ' + BROKER_URL);
+      try {
+        client = mqtt.connect(BROKER_URL, {
+          clientId: 'web_toggle_' + Math.floor(Math.random()*10000),
+          username: USERNAME,
+          password: PASSWORD,
+          reconnectPeriod: 3000,
+          connectTimeout: 30 * 1000,
+          keepalive: 20,
+          clean: true,
+        });
+      } catch (e) {
+        addSmallConsole('Lỗi tạo client: ' + e);
+        setConnectionStatus('Lỗi tạo client', false);
+        return;
+      }
+
+      client.on('connect', () => {
+        connected = true;
+        setConnectionStatus('Đã kết nối', true);
+        addSmallConsole('Connected, subscribing to ' + TOPIC);
+        client.subscribe(TOPIC, {qos: QOS}, (err) => {
+          if (err) {
+            addSmallConsole('Subscribe error: ' + err);
+          } else {
+            addSmallConsole('Subscribed to ' + TOPIC);
+          }
+        });
+        // ask for last will? (no) We wait for device to publish its status.
+      });
+
+      client.on('reconnect', () => {
+        connected = false;
+        setConnectionStatus('Đang kết nối lại...', false);
+      });
+
+      client.on('close', () => {
+        connected = false;
+        setConnectionStatus('Đã ngắt', false);
+      });
+
+      client.on('offline', () => {
+        connected = false;
+        setConnectionStatus('Offline', false);
+      });
+
+      client.on('error', (err) => {
+        addSmallConsole('MQTT error: ' + (err && err.message ? err.message : err));
+        // allow reconnect
+      });
+
+      client.on('message', (topic, payload) => {
+        const msg = payload.toString();
+        addSmallConsole('Received: ' + msg + ' from ' + topic);
+        if (msg === 'ON' || msg === 'OFF') {
+          setDeviceState(msg, 'Updated from topic ' + topic);
+        } else {
+          // if device sends other payloads, ignore or show unknown
+          setDeviceState(null, 'Last message: ' + msg);
+        }
+      });
+    }
+
+    function publishState(state) {
+      if (!client || !connected) {
+        addSmallConsole('Không gửi được - chưa kết nối');
+        return;
+      }
+      client.publish(TOPIC, String(state), {qos: QOS}, (err) => {
+        if (err) addSmallConsole('Publish error: ' + err);
+        else addSmallConsole('Published: ' + state);
+      });
+    }
+
+    // ---------- UI interactions ----------
+    function toggleAction() {
+      if (toggle.getAttribute('aria-disabled') === 'true') {
+        // disabled, ignore
+        return;
+      }
+      // compute next state
+      const currentlyOn = toggle.getAttribute('data-on') === 'true';
+      const next = currentlyOn ? 'OFF' : 'ON';
+      // optimistic UI change (we could wait for device reply, but UX better to reflect immediately)
+      setDeviceState(next, 'Sending ' + next);
+      publishState(next);
+    }
+
+    toggle.addEventListener('click', toggleAction);
+    toggle.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggleAction(); }
+    });
+
+    // small invisible console for dev (kept minimal, not shown)
+    function addSmallConsole(msg) {
+      console.log('[mqtt-toggle] ' + msg);
+    }
+
+    // ---------- Init ----------
+    setToggleEnabled(false);
+    setConnectionStatus('Chưa kết nối', false);
+    setDeviceState(null, 'Waiting for device');
+
+    // auto connect once
+    setTimeout(() => { createClientAndConnect(); }, 300);
+
+    // clean unload
+    window.addEventListener('beforeunload', () => {
+      if (client && client.end) client.end(true);
+    });
+  </script>
 </body>
-
 </html>
