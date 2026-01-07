@@ -1,262 +1,1033 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MQTT 3 Toggle — Simple</title>
-  <style>
-    :root{
-      --bg:#041021; --card:#071827; --muted:#9aa4b2; --on:#10b981; --off:#cbd5e1;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    html,body{height:100%}
-    body{
-      margin:0; background:linear-gradient(180deg,#03121a,#04162a); color:#e6eef6;
-      display:flex; align-items:center; justify-content:center; padding:20px;
-    }
-    .card{
-      width:420px; max-width:95vw; border-radius:12px; padding:20px 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);
-      text-align:center;
-    }
-    h1{margin:0;font-size:18px}
-    p.lead{margin:8px 0 18px;color:var(--muted);font-size:13px}
-    .group{display:flex;flex-direction:column;gap:16px;align-items:center}
-    .row{display:flex;align-items:center;gap:14px;width:100%;justify-content:space-between}
-    .label { font-weight:700; font-size:15px; color: #e6eef6 }
-    .small { font-size:12px; color:var(--muted) }
 
-    /* Toggle */
-    .switch {
-      --w:84px; --h:44px;
-      width:var(--w); height:var(--h); border-radius:26px; position:relative;
-      background:rgba(255,255,255,0.04); padding:5px; box-sizing:border-box;
-      display:inline-block; transition:background .14s ease, opacity .14s;
-      cursor:pointer;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Bắn Vịt</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .switch[aria-disabled="true"]{ opacity:0.45; cursor:not-allowed; }
-    .switch[data-on="true"]{ background: linear-gradient(90deg, rgba(16,185,129,0.18), rgba(6,182,212,0.08)); }
-    .knob { width:34px;height:34px;border-radius:50%;background:white;transform:translateX(0); transition: transform .14s cubic-bezier(.2,.9,.3,1) }
-    .switch[data-on="true"] .knob { transform: translateX(40px); }
-    .status { margin-top:12px; font-size:13px; color:var(--muted) }
-    .stateText { font-weight:700; font-size:14px; }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Arial', sans-serif;
+      cursor: none;
+      overflow: hidden;
+    }
+
+    #gameContainer {
+      text-align: center;
+      position: relative;
+    }
+
+    #gameCanvas {
+      border: 4px solid #654321;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.2);
+      cursor: none;
+    }
+
+    #crosshair {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      z-index: 1000;
+      transform: translate(-50%, -50%);
+    }
+
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8);
+      padding: 0 20px;
+    }
+
+    .stat {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(50, 50, 50, 0.6));
+      padding: 15px 25px;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .stat.pulse {
+      animation: pulse 0.3s;
+      border-color: #FFD700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.15);
+      }
+    }
+
+    #timerBar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    #timerFill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff0000, #ff6600, #ffaa00, #00ff00);
+      transition: width 0.1s linear;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    #gameOver {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.98), rgba(30, 30, 60, 0.95));
+      color: white;
+      padding: 60px;
+      border-radius: 30px;
+      text-align: center;
+      box-shadow: 0 0 100px rgba(255, 215, 0, 0.5), inset 0 0 50px rgba(255, 215, 0, 0.1);
+      z-index: 10;
+      animation: fadeIn 0.5s;
+      border: 3px solid rgba(255, 215, 0, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    #gameOver h2 {
+      font-size: 56px;
+      margin-bottom: 20px;
+      color: #ff4444;
+      animation: bounce 0.6s;
+      text-shadow: 0 0 20px rgba(255, 68, 68, 0.8);
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-30px);
+      }
+    }
+
+    #gameOver button {
+      font-size: 28px;
+      padding: 18px 50px;
+      margin-top: 25px;
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+      font-weight: bold;
+    }
+
+    #gameOver button:hover {
+      background: linear-gradient(135deg, #45a049, #3d8b40);
+      transform: scale(1.1);
+      box-shadow: 0 8px 30px rgba(76, 175, 80, 0.6);
+    }
+
+    #controls {
+      color: white;
+      margin-top: 15px;
+      font-size: 18px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 1px 1px 2px rgba(0, 0, 0, 0.8);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(50, 50, 50, 0.5));
+      padding: 12px 20px;
+      border-radius: 15px;
+      display: inline-block;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    #combo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.5);
+      pointer-events: none;
+      display: none;
+      animation: comboAnim 1s;
+    }
+
+    @keyframes comboAnim {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>MQTT • 3 Switch</h1>
-    <p class="lead">3 công tắc (turn_light_1 / turn_light_2 / turn_light_3). Bị khoá đến khi kết nối.</p>
-
-    <div class="group">
-      <!-- Switch 1 -->
-      <div class="row">
-        <div style="text-align:left">
-          <div class="label">Đèn 1</div>
-          <div class="small">Topic: <code>turn_light_1</code></div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div id="toggle1" class="switch" role="button" tabindex="0" data-on="false" aria-pressed="false" aria-disabled="true">
-            <div class="knob"></div>
-          </div>
-          <div class="stateText" id="state1">TẮT</div>
-        </div>
-      </div>
-
-      <!-- Switch 2 -->
-      <div class="row">
-        <div style="text-align:left">
-          <div class="label">Đèn 2</div>
-          <div class="small">Topic: <code>turn_light_2</code></div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div id="toggle2" class="switch" role="button" tabindex="0" data-on="false" aria-pressed="false" aria-disabled="true">
-            <div class="knob"></div>
-          </div>
-          <div class="stateText" id="state2">TẮT</div>
-        </div>
-      </div>
-
-      <!-- Switch 3 -->
-      <div class="row">
-        <div style="text-align:left">
-          <div class="label">Đèn 3</div>
-          <div class="small">Topic: <code>turn_light_3</code></div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div id="toggle3" class="switch" role="button" tabindex="0" data-on="false" aria-pressed="false" aria-disabled="true">
-            <div class="knob"></div>
-          </div>
-          <div class="stateText" id="state3">TẮT</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="status" id="connStatus">Trạng thái kết nối: <strong>Chưa kết nối</strong></div>
+  <div id="crosshair">
+    <svg width="40" height="40" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="15" fill="none" stroke="red" stroke-width="2" opacity="0.8" />
+      <line x1="20" y1="0" x2="20" y2="10" stroke="red" stroke-width="2" />
+      <line x1="20" y1="30" x2="20" y2="40" stroke="red" stroke-width="2" />
+      <line x1="0" y1="20" x2="10" y2="20" stroke="red" stroke-width="2" />
+      <line x1="30" y1="20" x2="40" y2="20" stroke="red" stroke-width="2" />
+      <circle cx="20" cy="20" r="2" fill="red" />
+    </svg>
   </div>
 
-  <!-- mqtt.js -->
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="900" height="600"></canvas>
+    <div id="hud">
+      <div class="stat" id="scoreBox">🎯 Điểm: <span id="score">0</span></div>
+      <div class="stat" id="comboBox">🔥 Combo: <span id="comboCount">0</span>x</div>
+      <div class="stat" id="ducksBox">🦆 Vịt: <span id="ducks">0</span></div>
+    </div>
+    <div id="timerBar">
+      <div id="timerFill" style="width: 100%;"></div>
+    </div>
+    <div id="controls">
+      🖱️ Click chuột để bắn vịt! ⏱️ Thời gian: <span id="timeLeft">60</span>s
+    </div>
+    <div id="combo"></div>
+    <div id="gameOver">
+      <h2>HẾT GIỜ!</h2>
+      <p id="finalScore"></p>
+      <button onclick="restartGame()">Chơi lại</button>
+    </div>
+  </div>
+
   <script>
-    // ---------- CONFIG (pre-filled) ----------
-    const BROKER_URL = 'wss://5ddabd57e04648cf9b89ed05225e9ddc.s1.eu.hivemq.cloud:8884/mqtt';
-    const USERNAME = 'phannhan2612oz';
-    const PASSWORD = 'Thanhnhan003';
-    const TOPICS = ['turn_light_1', 'turn_light_2', 'turn_light_3'];
-    const QOS = 0;
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-    // ---------- UI refs ----------
-    const toggleEls = [
-      document.getElementById('toggle1'),
-      document.getElementById('toggle2'),
-      document.getElementById('toggle3')
-    ];
-    const stateEls = [
-      document.getElementById('state1'),
-      document.getElementById('state2'),
-      document.getElementById('state3')
-    ];
-    const connStatusEl = document.getElementById('connStatus');
+    let score = 0;
+    let ducksShot = 0;
+    let combo = 0;
+    let comboTimer = 0;
+    let maxCombo = 0;
+    let gameTime = 60;
+    let timeLeft = gameTime;
+    let gameRunning = true;
+    let lastTime = Date.now();
+    let ducks = [];
+    let clouds = [];
+    let trees = [];
+    let particles = [];
+    let floatingTexts = [];
+    let stars = [];
+    let shootingStars = [];
 
-    // ---------- State ----------
-    let client = null;
-    let connected = false;
-    const deviceStates = ['OFF','OFF','OFF']; // default OFF (Option A)
+    // Track mouse position
+    let mouseX = 0;
+    let mouseY = 0;
 
-    // Helpers
-    function setToggleEnabled(index, enabled) {
-      toggleEls[index].setAttribute('aria-disabled', enabled ? 'false' : 'true');
-    }
-    function setAllTogglesEnabled(enabled) {
-      toggleEls.forEach((el) => el.setAttribute('aria-disabled', enabled ? 'false' : 'true'));
-    }
-    function setConnectionText(text, ok) {
-      connStatusEl.innerHTML = 'Trạng thái kết nối: <strong>' + text + '</strong>';
-      setAllTogglesEnabled(Boolean(ok));
-    }
-    function setDeviceStateUI(index, state) {
-      const el = toggleEls[index];
-      const txt = state === 'ON' ? 'BẬT' : state === 'OFF' ? 'TẮT' : 'Unknown';
-      el.setAttribute('data-on', state === 'ON' ? 'true' : 'false');
-      el.setAttribute('aria-pressed', state === 'ON' ? 'true' : 'false');
-      stateEls[index].innerText = txt;
-      stateEls[index].style.color = state === 'ON' ? '#9be6c7' : '#cbd5e1';
-    }
+    document.addEventListener('mousemove', (e) => {
+      const crosshair = document.getElementById('crosshair');
+      crosshair.style.left = e.clientX + 'px';
+      crosshair.style.top = e.clientY + 'px';
 
-    // ---------- MQTT ----------
-    function createClientAndConnect() {
-      console.log('Connecting to', BROKER_URL);
-      try {
-        client = mqtt.connect(BROKER_URL, {
-          clientId: 'web_3toggle_' + Math.floor(Math.random()*10000),
-          username: USERNAME,
-          password: PASSWORD,
-          reconnectPeriod: 3000,
-          connectTimeout: 30 * 1000,
-          keepalive: 20,
-          clean: true
-        });
-      } catch (e) {
-        console.error('Create client error', e);
-        setConnectionText('Lỗi tạo client', false);
-        return;
-      }
-
-      client.on('connect', function () {
-        console.log('Connected');
-        connected = true;
-        setConnectionText('Đã kết nối', true);
-        // subscribe all topics
-        TOPICS.forEach((t) => {
-          client.subscribe(t, { qos: QOS }, (err) => {
-            if (err) console.warn('Subscribe error', t, err);
-            else console.log('Subscribed', t);
-          });
-        });
-      });
-
-      client.on('reconnect', function () {
-        console.log('Reconnecting...');
-        connected = false;
-        setConnectionText('Đang kết nối lại...', false);
-      });
-
-      client.on('close', function () {
-        console.log('Closed');
-        connected = false;
-        setConnectionText('Đã ngắt', false);
-      });
-
-      client.on('offline', function () {
-        console.log('Offline');
-        connected = false;
-        setConnectionText('Offline', false);
-      });
-
-      client.on('error', function (err) {
-        console.error('MQTT error', err);
-        // keep reconnecting
-      });
-
-      client.on('message', function (topic, payload) {
-        const msg = payload.toString();
-        console.log('Received', topic, msg);
-        // map topic to index
-        const idx = TOPICS.indexOf(topic);
-        if (idx >= 0) {
-          if (msg === 'ON' || msg === 'OFF') {
-            deviceStates[idx] = msg;
-            setDeviceStateUI(idx, msg);
-          } else {
-            // unknown payload: ignore or set to unknown
-            setDeviceStateUI(idx, null);
-          }
-        }
-      });
-    }
-
-    function publishState(index, state) {
-      if (!client || !connected) {
-        console.warn('Not connected, cannot publish');
-        return;
-      }
-      const topic = TOPICS[index];
-      client.publish(topic, String(state), { qos: QOS }, (err) => {
-        if (err) console.warn('Publish error', err);
-        else console.log('Published', topic, state);
-      });
-    }
-
-    // ---------- UI interactions ----------
-    function toggleAction(index) {
-      const disabled = toggleEls[index].getAttribute('aria-disabled') === 'true';
-      if (disabled) return;
-      const currentlyOn = toggleEls[index].getAttribute('data-on') === 'true';
-      const next = currentlyOn ? 'OFF' : 'ON';
-      // optimistic update
-      deviceStates[index] = next;
-      setDeviceStateUI(index, next);
-      publishState(index, next);
-    }
-
-    // attach listeners
-    toggleEls.forEach((el, idx) => {
-      el.addEventListener('click', () => toggleAction(idx));
-      el.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggleAction(idx); }});
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
     });
 
-    // ---------- Init ----------
-    // default UI = OFF (Option A)
-    deviceStates.forEach((s, i) => setDeviceStateUI(i, s));
-    setAllTogglesEnabled(false);
-    setConnectionText('Chưa kết nối', false);
+    class Star {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height * 0.6;
+        this.size = Math.random() * 2;
+        this.brightness = Math.random();
+        this.twinkleSpeed = 0.02 + Math.random() * 0.03;
+      }
 
-    // auto connect shortly after load
-    setTimeout(() => createClientAndConnect(), 300);
+      update() {
+        this.brightness += this.twinkleSpeed;
+        if (this.brightness > 1 || this.brightness < 0) {
+          this.twinkleSpeed *= -1;
+        }
+      }
 
-    // clean disconnect on unload
-    window.addEventListener('beforeunload', () => { try { if (client && client.end) client.end(true); } catch(e) {} });
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.brightness;
+        ctx.fillStyle = 'white';
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = 'white';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
 
+    class ShootingStar {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * 200;
+        this.length = 40 + Math.random() * 40;
+        this.speed = 8 + Math.random() * 4;
+        this.angle = Math.PI / 4;
+        this.opacity = 1;
+      }
+
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.opacity -= 0.01;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'white';
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(
+          this.x - Math.cos(this.angle) * this.length,
+          this.y - Math.sin(this.angle) * this.length
+        );
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      isDead() {
+        return this.opacity <= 0 || this.x > canvas.width || this.y > canvas.height;
+      }
+    }
+
+    class Particle {
+      constructor(x, y, color, type = 'normal') {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * (type === 'explosion' ? 15 : 8);
+        this.vy = (Math.random() - 0.5) * (type === 'explosion' ? 15 : 8) - 2;
+        this.life = 1;
+        this.decay = type === 'explosion' ? 0.015 : 0.02;
+        this.size = type === 'explosion' ? 4 + Math.random() * 4 : 3 + Math.random() * 3;
+        this.color = color;
+        this.gravity = 0.3;
+        this.type = type;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.life -= this.decay;
+        this.size *= 0.96;
+        this.vx *= 0.98;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = this.type === 'explosion' ? 15 : 10;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      isDead() {
+        return this.life <= 0;
+      }
+    }
+
+    class FloatingText {
+      constructor(x, y, text, color, size = 24) {
+        this.x = x;
+        this.y = y;
+        this.text = text;
+        this.color = color;
+        this.size = size;
+        this.life = 1;
+        this.decay = 0.015;
+        this.vy = -3;
+        this.scale = 0.5;
+        this.scaleSpeed = 0.1;
+      }
+
+      update() {
+        this.y += this.vy;
+        this.life -= this.decay;
+        if (this.scale < 1) {
+          this.scale += this.scaleSpeed;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.font = `bold ${this.size * this.scale}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 4;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = this.color;
+        ctx.strokeText(this.text, this.x, this.y);
+        ctx.fillText(this.text, this.x, this.y);
+        ctx.restore();
+      }
+
+      isDead() {
+        return this.life <= 0;
+      }
+    }
+
+    class MuzzleFlash {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.life = 1;
+        this.decay = 0.2;
+        this.size = 25;
+      }
+
+      update() {
+        this.life -= this.decay;
+        this.size += 3;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.shadowBlur = 30;
+        ctx.shadowColor = 'yellow';
+
+        for (let i = 0; i < 12; i++) {
+          const angle = (Math.PI * 2 / 12) * i;
+          const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+          gradient.addColorStop(0, 'yellow');
+          gradient.addColorStop(0.5, 'orange');
+          gradient.addColorStop(1, 'rgba(255,0,0,0)');
+          ctx.fillStyle = gradient;
+
+          ctx.beginPath();
+          ctx.moveTo(this.x, this.y);
+          ctx.lineTo(
+            this.x + Math.cos(angle) * this.size,
+            this.y + Math.sin(angle) * this.size
+          );
+          ctx.lineTo(
+            this.x + Math.cos(angle + 0.4) * (this.size * 0.4),
+            this.y + Math.sin(angle + 0.4) * (this.size * 0.4)
+          );
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      isDead() {
+        return this.life <= 0;
+      }
+    }
+
+    class Duck {
+      constructor() {
+        this.x = Math.random() > 0.5 ? -50 : canvas.width + 50;
+        this.y = 100 + Math.random() * 300;
+        this.width = 50;
+        this.height = 40;
+        this.speedX = (this.x < 0 ? 1 : -1) * (2.5 + Math.random() * 3);
+        this.speedY = (Math.random() - 0.5) * 3;
+        this.flap = 0;
+        this.shot = false;
+        this.falling = false;
+        this.fallSpeed = 0;
+        this.rotation = 0;
+        this.scale = 1;
+        this.trail = [];
+      }
+
+      update() {
+        if (this.falling) {
+          this.fallSpeed += 0.6;
+          this.y += this.fallSpeed;
+          this.rotation += 0.25;
+        } else {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          this.flap += 0.25;
+
+          // Add trail effect
+          this.trail.push({ x: this.x, y: this.y, life: 1 });
+          if (this.trail.length > 8) {
+            this.trail.shift();
+          }
+
+          if (this.y < 80) this.speedY = Math.abs(this.speedY);
+          if (this.y > 400) this.speedY = -Math.abs(this.speedY);
+        }
+
+        // Update trail
+        this.trail.forEach(t => t.life -= 0.15);
+        this.trail = this.trail.filter(t => t.life > 0);
+      }
+
+      draw() {
+        // Draw trail
+        if (!this.falling) {
+          this.trail.forEach((t, i) => {
+            ctx.save();
+            ctx.globalAlpha = t.life * 0.3;
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.ellipse(t.x + this.width / 2, t.y + this.height / 2,
+              this.width / 3, this.height / 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          });
+        }
+
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.scale(this.scale, this.scale);
+
+        if (this.falling) {
+          ctx.rotate(this.rotation);
+        } else if (this.speedX < 0) {
+          ctx.scale(-1, 1);
+        }
+
+        // Shadow
+        if (!this.falling) {
+          ctx.fillStyle = 'rgba(0,0,0,0.3)';
+          ctx.beginPath();
+          ctx.ellipse(5, 55, this.width / 2, 10, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Body with gradient
+        const bodyGradient = ctx.createRadialGradient(-5, -5, 0, 0, 0, this.width / 2);
+        bodyGradient.addColorStop(0, this.shot ? '#888' : '#a0722b');
+        bodyGradient.addColorStop(1, this.shot ? '#555' : '#8B4513');
+        ctx.fillStyle = bodyGradient;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.width / 2, this.height / 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Head with gradient
+        const headGradient = ctx.createRadialGradient(-this.width / 3 - 3, -this.height / 3 - 3, 0,
+          -this.width / 3, -this.height / 3, this.height / 2.5);
+        headGradient.addColorStop(0, this.shot ? '#666' : '#3fa05f');
+        headGradient.addColorStop(1, this.shot ? '#444' : '#2E8B57');
+        ctx.fillStyle = headGradient;
+        ctx.beginPath();
+        ctx.arc(-this.width / 3, -this.height / 3, this.height / 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Beak with shine
+        ctx.fillStyle = '#FFA500';
+        ctx.beginPath();
+        ctx.moveTo(-this.width / 2, -this.height / 3);
+        ctx.lineTo(-this.width / 2 - 12, -this.height / 3 - 4);
+        ctx.lineTo(-this.width / 2 - 12, -this.height / 3 + 4);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.moveTo(-this.width / 2 - 2, -this.height / 3 - 2);
+        ctx.lineTo(-this.width / 2 - 6, -this.height / 3 - 3);
+        ctx.lineTo(-this.width / 2 - 6, -this.height / 3);
+        ctx.closePath();
+        ctx.fill();
+
+        // Eye with detail
+        if (!this.shot) {
+          ctx.fillStyle = 'white';
+          ctx.beginPath();
+          ctx.arc(-this.width / 3 - 5, -this.height / 3 - 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = 'black';
+          ctx.beginPath();
+          ctx.arc(-this.width / 3 - 4, -this.height / 3 - 2, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = 'white';
+          ctx.beginPath();
+          ctx.arc(-this.width / 3 - 3, -this.height / 3 - 3, 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.shadowBlur = 0;
+
+        // Wings with animation and glow
+        if (!this.falling && !this.shot) {
+          const wingFlap = Math.sin(this.flap) * 15;
+          ctx.fillStyle = '#654321';
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = 'rgba(101,67,33,0.5)';
+
+          ctx.beginPath();
+          ctx.ellipse(5, -10 + wingFlap, 22, 12, -0.3, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.ellipse(5, 10 - wingFlap, 22, 12, 0.3, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.restore();
+      }
+
+      isOffScreen() {
+        return this.x < -100 || this.x > canvas.width + 100 || this.y > canvas.height + 50;
+      }
+
+      hit(mouseX, mouseY) {
+        const dx = mouseX - (this.x + this.width / 2);
+        const dy = mouseY - (this.y + this.height / 2);
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < this.width / 2 + 15;
+      }
+
+      shoot() {
+        if (!this.shot && !this.falling) {
+          this.shot = true;
+          this.falling = true;
+
+          combo++;
+          comboTimer = 2;
+          if (combo > maxCombo) maxCombo = combo;
+
+          const comboBonus = combo > 1 ? combo * 50 : 0;
+          const totalScore = 100 + comboBonus;
+          score += totalScore;
+          ducksShot++;
+
+          // Massive explosion effect
+          const colors = ['#ff0000', '#ff3300', '#ff6600', '#ff9900', '#ffcc00', '#ffff00', '#fff'];
+          for (let i = 0; i < 50; i++) {
+            particles.push(new Particle(
+              this.x + this.width / 2,
+              this.y + this.height / 2,
+              colors[Math.floor(Math.random() * colors.length)],
+              'explosion'
+            ));
+          }
+
+          // Feather shower
+          for (let i = 0; i < 25; i++) {
+            particles.push(new Particle(
+              this.x + this.width / 2,
+              this.y + this.height / 2,
+              Math.random() > 0.5 ? '#8B4513' : '#654321',
+              'normal'
+            ));
+          }
+
+          // Floating text with combo
+          if (combo > 1) {
+            floatingTexts.push(new FloatingText(
+              this.x + this.width / 2,
+              this.y,
+              `+${totalScore} (${combo}x COMBO!)`,
+              '#FFD700',
+              32
+            ));
+
+            // Show big combo text
+            if (combo >= 5) {
+              const comboDiv = document.getElementById('combo');
+              comboDiv.textContent = `${combo}x COMBO!`;
+              comboDiv.style.display = 'block';
+              setTimeout(() => {
+                comboDiv.style.display = 'none';
+              }, 1000);
+            }
+          } else {
+            floatingTexts.push(new FloatingText(
+              this.x + this.width / 2,
+              this.y,
+              `+${totalScore}`,
+              '#FFD700',
+              28
+            ));
+          }
+
+          return true;
+        }
+        return false;
+      }
+    }
+
+    class Cloud {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * 250;
+        this.width = 70 + Math.random() * 50;
+        this.height = 35 + Math.random() * 25;
+        this.speed = 0.2 + Math.random() * 0.4;
+        this.opacity = 0.3 + Math.random() * 0.4;
+      }
+
+      update() {
+        this.x += this.speed;
+        if (this.x > canvas.width + 150) {
+          this.x = -150;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = 'white';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.height / 2, 0, Math.PI * 2);
+        ctx.arc(this.x + this.width / 2, this.y, this.height / 2 + 8, 0, Math.PI * 2);
+        ctx.arc(this.x + this.width, this.y, this.height / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    class Tree {
+      constructor(x) {
+        this.x = x;
+        this.y = canvas.height - 140;
+        this.height = 70 + Math.random() * 50;
+        this.sway = Math.random() * Math.PI * 2;
+      }
+
+      update() {
+        this.sway += 0.02;
+      }
+
+      draw() {
+        const swayAmount = Math.sin(this.sway) * 4;
+
+        ctx.save();
+
+        ctx.fillStyle = '#654321';
+        ctx.fillRect(this.x - 12, this.y, 24, this.height);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillRect(this.x + 10, this.y, 5, this.height);
+
+        ctx.translate(this.x, this.y - 25);
+        ctx.rotate(swayAmount * 0.05);
+
+        const leafGradient = ctx.createRadialGradient(-10, -10, 0, 0, 0, 50);
+        leafGradient.addColorStop(0, '#3fa05f');
+        leafGradient.addColorStop(1, '#228B22');
+        ctx.fillStyle = leafGradient;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = 'rgba(34,139,34,0.3)';
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 45, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(-25, 12, 35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(25, 12, 35, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    function init() {
+      for (let i = 0; i < 100; i++) {
+        stars.push(new Star());
+      }
+
+      for (let i = 0; i < 6; i++) {
+        clouds.push(new Cloud());
+      }
+
+      for (let i = 0; i < 7; i++) {
+        trees.push(new Tree(80 + i * 130));
+      }
+
+      spawnDucks(4);
+    }
+
+    function spawnDucks(count) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          if (gameRunning && timeLeft > 0) {
+            ducks.push(new Duck());
+          }
+        }, i * 800);
+      }
+    }
+
+    canvas.addEventListener('click', (e) => {
+      if (!gameRunning || timeLeft <= 0) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      particles.push(new MuzzleFlash(clickX, clickY));
+
+      for (let i = 0; i < 8; i++) {
+        particles.push(new Particle(clickX, clickY, '#ccc', 'normal'));
+      }
+
+      let hit = false;
+      for (let duck of ducks) {
+        if (!duck.shot && duck.hit(clickX, clickY)) {
+          duck.shoot();
+          hit = true;
+          document.getElementById('scoreBox').classList.add('pulse');
+          document.getElementById('comboBox').classList.add('pulse');
+          document.getElementById('ducksBox').classList.add('pulse');
+          setTimeout(() => {
+            document.getElementById('scoreBox').classList.remove('pulse');
+            document.getElementById('comboBox').classList.remove('pulse');
+            document.getElementById('ducksBox').classList.remove('pulse');
+          }, 300);
+          break;
+        }
+      }
+
+      if (!hit) {
+        floatingTexts.push(new FloatingText(clickX, clickY, 'MISS!', '#ff4444', 24));
+        combo = 0;
+      }
+
+      updateHUD();
+    });
+
+    function drawBackground() {
+      const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.7);
+      skyGradient.addColorStop(0, '#1a1a2e');
+      skyGradient.addColorStop(0.5, '#16213e');
+      skyGradient.addColorStop(1, '#0f3460');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height * 0.7);
+
+      ctx.fillStyle = '#1a4d2e';
+      ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.15);
+
+      const groundGradient = ctx.createLinearGradient(0, canvas.height * 0.85, 0, canvas.height);
+      groundGradient.addColorStop(0, '#0f3a1f');
+      groundGradient.addColorStop(1, '#082814');
+      ctx.fillStyle = groundGradient;
+      ctx.fillRect(0, canvas.height * 0.85, canvas.width, canvas.height * 0.15);
+
+      ctx.save();
+      const moonGradient = ctx.createRadialGradient(750, 100, 0, 750, 100, 60);
+      moonGradient.addColorStop(0, '#ffffcc');
+      moonGradient.addColorStop(0.5, '#ffff99');
+      moonGradient.addColorStop(1, 'rgba(255,255,153,0)');
+      ctx.fillStyle = moonGradient;
+      ctx.shadowBlur = 50;
+      ctx.shadowColor = '#ffffcc';
+      ctx.beginPath();
+      ctx.arc(750, 100, 50, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function updateHUD() {
+      document.getElementById('score').textContent = score;
+      document.getElementById('ducks').textContent = ducksShot;
+      document.getElementById('comboCount').textContent = combo;
+    }
+
+    function updateTimer() {
+      const now = Date.now();
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      if (gameRunning && timeLeft > 0) {
+        timeLeft -= delta;
+        if (timeLeft < 0) timeLeft = 0;
+
+        const percent = (timeLeft / gameTime) * 100;
+        document.getElementById('timerFill').style.width = percent + '%';
+        document.getElementById('timeLeft').textContent = Math.ceil(timeLeft);
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }
+
+      if (comboTimer > 0) {
+        comboTimer -= delta;
+        if (comboTimer <= 0) {
+          combo = 0;
+          updateHUD();
+        }
+      }
+    }
+
+    function gameLoop() {
+      if (!gameRunning && timeLeft > 0) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawBackground();
+
+      stars.forEach(star => {
+        star.update();
+        star.draw();
+      });
+
+      if (Math.random() < 0.002) {
+        shootingStars.push(new ShootingStar());
+      }
+
+      shootingStars = shootingStars.filter(star => {
+        star.update();
+        star.draw();
+        return !star.isDead();
+      });
+
+      clouds.forEach(cloud => {
+        cloud.update();
+        cloud.draw();
+      });
+
+      trees.forEach(tree => {
+        tree.update();
+        tree.draw();
+      });
+
+      ducks = ducks.filter(duck => {
+        duck.update();
+        duck.draw();
+        return !duck.isOffScreen();
+      });
+
+      particles = particles.filter(particle => {
+        particle.update();
+        particle.draw();
+        return !particle.isDead();
+      });
+
+      floatingTexts = floatingTexts.filter(text => {
+        text.update();
+        text.draw();
+        return !text.isDead();
+      });
+
+      if (ducks.length < 4 && timeLeft > 0 && gameRunning) {
+        spawnDucks(1);
+      }
+
+      updateTimer();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+      gameRunning = false;
+
+      for (let i = 0; i < 150; i++) {
+        setTimeout(() => {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const colors = ['#FFD700', '#FFA500', '#FF6347', '#00FF00', '#00FFFF', '#FF00FF'];
+          for (let j = 0; j < 8; j++) {
+            particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)], 'explosion'));
+          }
+        }, i * 15);
+      }
+
+      setTimeout(() => {
+        const message = `
+                    Điểm: ${score}<br>
+                    Vịt bắn được: ${ducksShot}<br>
+                    Combo cao nhất: ${maxCombo}x
+                `;
+        document.getElementById('finalScore').innerHTML = message;
+        document.getElementById('gameOver').style.display = 'block';
+        document.querySelector('#gameOver h2').textContent = 'HẾT GIỜ!';
+        document.querySelector('#gameOver h2').style.color = '#FFD700';
+      }, 2000);
+    }
+
+    function restartGame() {
+      score = 0;
+      ducksShot = 0;
+      combo = 0;
+      maxCombo = 0;
+      comboTimer = 0;
+      timeLeft = gameTime;
+      ducks = [];
+      particles = [];
+      floatingTexts = [];
+      shootingStars = [];
+      gameRunning = true;
+      lastTime = Date.now();
+      document.getElementById('gameOver').style.display = 'none';
+      updateHUD();
+      spawnDucks(4);
+      gameLoop();
+    }
+
+    init();
+    updateHUD();
+    gameLoop();
   </script>
 </body>
+
 </html>
